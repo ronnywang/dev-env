@@ -27,8 +27,25 @@ html {
         <div style="height: 50%; width: 100%" class="panel panel-default">
             <div class="panel-heading">結果區</div>
             <div class="panel-body">
-                <textarea id="result" style="width: 100%; height:100%"></textarea>
-                指令區: <input type="text">
+                <textarea id="result-stdout" class="result-text" style="width: 100%; height:200px"></textarea>
+                <textarea id="result-stderr" class="result-text" style="width: 100%; height:200px; display: none"></textarea>
+                <form id="command-form">
+                    <ul class="nav nav-pills" style="display: inline-table">
+                        <li role="presentation" class="result-switch active" data-type="stdout">
+                        <a href="#">
+                            stdout
+                            <span id="result-stdout-isnew" style="display:none">(*)</span>
+                        </a>
+                        </li>
+                        <li role="presentation" class="result-switch" data-type="stderr">
+                        <a href="#">
+                            stderr
+                            <span id="result-stderr-isnew" style="display:none">(*)</span>
+                        </a>
+                        </li>
+                    </ul>
+                    <input type="text" id="command-text"><button type="submit">RUN</button>
+                </form>
             </div>
         </div>
         <div style="height: 50%; width: 100%" class="panel panel-default">
@@ -144,6 +161,49 @@ $('#save-file-button').click(function(e){
         openfile(file_path);
     }, 'json');
 });
+
+$('.result-switch').click(function(e){
+    e.preventDefault();
+    var type = $(this).data('type');
+    $('.result-switch').removeClass('active');
+    $(this).addClass('active');
+    $('.result-text').hide();
+    $('#result-' + type).show();
+    $('#result-' + type + '-isnew').hide();
+
+});
+
+var check_session = function(session_id, stdout_offset, stderr_offset){
+    $.get('/api/getsession?session_id=' + encodeURIComponent(session_id) + '&stdout_offset=' + parseInt(stdout_offset) + '&stderr_offset=' + parseInt(stderr_offset), function(ret){
+        ['stdout', 'stderr'].map(function(type){
+            if (ret[type].length) {
+                $('#result-' + type).val($('#result-' + type).val() + ret[type]);
+                $('#result-' + type)[0].scrollTop = $('#result-' + type)[0].scrollHeight;
+                if (!$('#result-' + type).is(':visible')) {
+                    $('#result-' + type + '-isnew').show();
+                }
+            }
+        });
+
+        if (ret.done) {
+            $('#command-text').prop('disabled', false);
+            $('#command-form').prop('disabled', false);
+        } else {
+            setTimeout(function(){ check_session(session_id, ret.stdout_offset, ret.stderr_offset); }, 500);
+        }
+    }, 'json');
+};
+
+$('#command-form').submit(function(e){
+    e.preventDefault();
+    var base_folder = $('#dir-location').data('dir');
+    $.post('/api/runcommand?base=' + encodeURIComponent(base_folder) + '&command=' + encodeURIComponent($('#command-text').val()), '', function(ret){
+        $('#command-form').prop('disabled', true);
+        $('#command-text').prop('disabled', true);
+        check_session(ret.session_id, 0, 0);
+    }, 'json');
+});
+
 $('#add-folder').submit(function(e){
     e.preventDefault();
     var base_folder = $('#dir-location').data('dir');

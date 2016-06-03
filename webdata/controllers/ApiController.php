@@ -110,4 +110,60 @@ class ApiController extends Pix_Controller
             'path' => $path,
         ));
     }
+
+    public function runcommandAction()
+    {
+        $base_folder = $_REQUEST['base'];
+        $command = $_REQUEST['command'];
+
+        $file_base = realpath(__DIR__ . '/../../files/') . '/';
+        $base_folder = realpath($file_base . $base_folder) . '/';
+        if (strpos($base_folder, $file_base) !== 0 or !is_dir($base_folder)) {
+            return $this->error(sprintf("資料夾錯誤: %s", $_REQUEST['base']));
+        }
+
+        $session_id = crc32(uniqid());
+        touch(__DIR__ . "/../../sessions/{$session_id}.stdout");
+        file_put_contents(__DIR__ . "/../../sessions/{$session_id}.pending", json_encode(array(
+            'session_id' => $session_id,
+            'command' => $command,
+            'base_folder' => $base_folder,
+        )));
+        return $this->json(array(
+            'error' => false,
+            'session_id' => $session_id,
+        ));
+    }
+
+    public function getsessionAction()
+    {
+        $session_id = intval($_GET['session_id']);
+        $session_base = __DIR__ . '/../../sessions/';
+        $stdout_offset = intval($_GET['stdout_offset']);
+        $stderr_offset = intval($_GET['stderr_offset']);
+
+        if (!file_exists("{$session_base}{$session_id}.stdout")) {
+            return $this->error("找不到 Session: $session_id");
+        }
+        $stdout = file_get_contents("{$session_base}{$session_id}.stdout", false, null, $stdout_offset);
+        $stderr = file_get_contents("{$session_base}{$session_id}.stderr", false, null, $stderr_offset);
+
+        if (file_exists("{$session_base}{$session_id}.done")) {
+            unlink("{$session_base}{$session_id}.done");
+            unlink("{$session_base}{$session_id}.stderr");
+            unlink("{$session_base}{$session_id}.stdout");
+            error_log("clean {$session_id}");
+            $done = true;
+        } else {
+            $done = false;
+        }
+
+        return $this->json(array(
+            'stdout' => $stdout,
+            'stderr' => $stderr,
+            'stdout_offset' => $stdout_offset + strlen($stdout),
+            'stderr_offset' => $stderr_offset + strlen($stderr),
+            'done' => $done,
+        ));
+    }
 }
