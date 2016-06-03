@@ -87,8 +87,16 @@ require.config({
   }]
 });
 
+var update_location_hash = function(){
+    var dir_path = $('#filename').data('path');
+    var file_path = $('#dir-location').data('dir');
+
+    document.location.hash = dir_path + ';' + file_path;
+};
+
 var openfile = function(path){
     $('#filename').text(path).data('path', path);
+    update_location_hash();
     $.get('/api/getfile?base=' + encodeURIComponent(path), function(ret){
         if (ret.error) {
             alert(ret.message);
@@ -102,6 +110,7 @@ var openfile = function(path){
 
 var chdir = function(path){
     $('#dir-location').data('dir', path);
+    update_location_hash();
     $('#dir-location').html('');
     for (var i = 0; i < path.split('/').length; i ++) {
         if (i == 0) {
@@ -268,8 +277,14 @@ codemirror.on('change', function(e){
         $('#save-file-button').hide();
     }
 });
-chdir('/');
-openfile('/README');
+if (document.location.hash) {
+    var hash = document.location.hash.split('#')[1];
+    openfile(hash.split(';')[0]);
+    chdir(hash.split(';')[1]);
+} else {
+    openfile('/README');
+    chdir('/');
+}
 });
 
 </script>
