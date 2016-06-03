@@ -38,8 +38,7 @@ while (true) {
             2 => array("file", getenv('SESSION_PATH') . "/{$session_id}.stderr", 'w'),
         );
         $cwd = $base_folder;
-        $env = array();
-        $proc = proc_open($command, $descriptorspec, $pipes, $cwd, $env);
+        $proc = proc_open($command, $descriptorspec, $pipes, $cwd);
         $start = microtime(true);
         $limit = 300;
         $error_message = null;
