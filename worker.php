@@ -4,6 +4,13 @@ include(__DIR__ . '/init.inc.php');
 
 while (true) {
     usleep(1000);
+    $freeme = array_shift(glob(getenv("SESSION_PATH") . '/*.freeme'));
+    if ($freeme) {
+        unlink($freeme);
+        $status = 0;
+        pcntl_wait($status);
+    }
+
     $pendings = glob(getenv("SESSION_PATH") . '/*.pending');
     if (!$pendings) {
         continue;
@@ -53,6 +60,7 @@ while (true) {
         }
 
         touch(getenv('SESSION_PATH') . "/{$session_id}.done");
+        touch(getenv('SESSION_PATH') . "/{$session_id}.freeme");
         error_log("Running {$session_id} $command done...");
         exit;
     }
