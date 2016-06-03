@@ -12,6 +12,9 @@ if (!getenv('FILE_PATH')) {
     putenv('FILE_PATH=/tmp/dev-files');
     if (!file_exists(getenv('FILE_PATH'))) {
         mkdir(getenv('FILE_PATH'));
+        foreach (glob(__FILE__ . "/template/*") as $f) {
+            copy($f, getenv('FILE_PATH'));
+        }
     }
 }
 include(__DIR__ . '/pixframework/Pix/Loader.php');

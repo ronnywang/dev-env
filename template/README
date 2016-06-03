@@ -1,0 +1,10 @@
+這是一個可以在 web 上練習寫 PHP 的環境
+您可以在右下角檔案區自由新增檔案
+在左邊編輯區修改內容並儲存
+以及在右邊的結果區，可以下指令執行
+
+在剛跑起來的初始環境中，會有兩個檔案 README 和 hello.php
+您可以試試看在指令區輸入 php hello.php
+就可以執行這個 PHP 囉
+
+關於本程式原始碼放在 https://github.com/ronnywang/dev-env
