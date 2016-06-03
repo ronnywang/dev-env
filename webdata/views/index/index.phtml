@@ -101,7 +101,6 @@ var openfile = function(path){
 };
 
 var chdir = function(path){
-    console.log(path);
     $('#dir-location').data('dir', path);
     $('#dir-location').html('');
     for (var i = 0; i < path.split('/').length; i ++) {
