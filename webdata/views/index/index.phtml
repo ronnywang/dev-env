@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Dev Env</title>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/css/bootstrap.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/require.js/2.1.14/require.min.js"></script>
+<link rel="stylesheet" href="/static/codemirror/lib/codemirror.css">
+</head>
+<body style="height: 100%">
+<div class="container" style="height: 100%">
+    <div style="height: 100%; width: 50%; float: left" class="panel panel-default">
+        <div class="panel-heading">編輯區</div>
+        <div class="panel-body">
+            <textarea id="code" style="width: 100%; height: 100%"></textarea>
+        </div>
+    </div>
+    <div style="height: 100%; width: 50%; float: left">
+        <div style="height: 50%; width: 100%" class="panel panel-default">
+            <div class="panel-heading">結果區</div>
+            <div class="panel-body">
+                <textarea id="result" style="width: 100%; height:100%"></textarea>
+                指令區: <input type="text">
+            </div>
+        </div>
+        <div style="height: 50%; width: 100%" class="panel panel-default">
+            <div class="panel-heading">檔案區</div>
+            <div class="panel-body" id="file-area">
+                <form id="add-folder">
+                    資料夾： <ol class="breadcrumb" style="display: inline" id="dir-location" data-dir="/"></ol>
+                    <input type="text" id="new-folder-name" placeholder="新資料夾名或檔名">
+                    <label><input type="radio" name="type" value="dir" checked="checked"><span class="glyphicon glyphicon-folder-open" aria-hidden="true"></span></label>
+                    <label><input type="radio" name="type" value="file"><span class="glyphicon glyphicon-file" aria-hidden="true"></span></label>
+                    <button type="submit"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+                </button>
+                </form>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <td>檔名</td>
+                            <td>大小</td>
+                            <td>時間</td>
+                            <td>動作</td>
+                        </tr>
+                    </thead>
+                    <tbody id="file-list">
+                    </tbody>
+                </table>
+        </div>
+    </div>
+    <div style="clear:both"></div>
+</div>
+<script>
+require.config({
+  packages: [{
+      name: "codemirror",
+      location: "/static/codemirror",
+      main: "lib/codemirror"
+  }]
+});
+
+require([
+    "codemirror", "codemirror/mode/htmlmixed/htmlmixed", "codemirror/mode/php/php"
+], function(CodeMirror) {
+    CodeMirror.fromTextArea(document.getElementById("code"), {
+        lineNumbers: true,
+        mode: "php"
+  });
+});
+
+var chdir = function(path){
+    console.log(path);
+    $('#dir-location').data('dir', path);
+    $('#dir-location').html('');
+    for (var i = 0; i < path.split('/').length; i ++) {
+        if (i == 0) {
+            name = 'ROOT';
+        } else {
+            name = path.split('/')[i];
+            if (name.length == 0) {
+                continue;
+            }
+        }
+        $('#dir-location').append(
+            $('<li></li>').append(
+                $('<a></a>').addClass('dir-link').text(name).data('path', path.split('/').slice(0, i).join('/') + '/').attr('href', '#')
+            )
+        );
+    }
+    reload_files();
+};
+
+var reload_files = function(){
+    var base_folder = $('#dir-location').data('dir');
+    $.get('/api/listfile?base=' + encodeURIComponent(base_folder), function(ret){
+        $('#file-list').html('');
+        for (var i = 0; i < ret.files.length; i ++) {
+            var tr_dom = $('<tr></tr>');
+            var a_dom = $('<a></a>').attr('href', '#').addClass(ret.files[i].type + '-link').data('path', ret.files[i].path);
+            if (ret.files[i].type == 'dir') {
+                a_dom.append('<span class="glyphicon glyphicon-folder-open" aria-hidden="true"></span> ');
+            } else {
+                a_dom.append('<span class="glyphicon glyphicon-file" aria-hidden="true"></span> ');
+            }
+            a_dom.append($('<span></span>').text(ret.files[i].name));
+            tr_dom.append($('<td></td>').append(a_dom));
+            tr_dom.append($('<td></td>').append(ret.files[i].size));
+            tr_dom.append($('<td></td>').append(ret.files[i].mtime));
+            tr_dom.append($('<td></td>').append(''));
+            $('#file-list').append(tr_dom);
+        }
+    }, 'json');
+};
+
+$('#file-area').on('click', '.dir-link', function(e){
+    e.preventDefault();
+    chdir($(this).data('path'));
+}),
+$('#add-folder').submit(function(e){
+    e.preventDefault();
+    var base_folder = $('#dir-location').data('dir');
+    var new_name = $('#new-folder-name').val();
+    var type = $('[name="type"]:checked', this).val();
+    $.post('/api/addobject?base=' + encodeURIComponent(base_folder) + '&name=' + encodeURIComponent(new_name) + '&type=' + type, '', function(ret){
+        if (ret.error) {
+            alert(ret.message);
+            return;
+        }
+        chdir(ret.path);
+        $('#new-folder-name').val('');
+    }, 'json');
+});
+chdir('/');
+</script>
+</body>
+</html>
