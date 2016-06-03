@@ -1,1 +1,1 @@
-web: php worker.php & ; php -S 0:$PORT index.php
+web: sh web.sh
