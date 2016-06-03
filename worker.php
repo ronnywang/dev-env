@@ -41,7 +41,7 @@ while (true) {
                 break;
             }
             if (microtime(true) - $start > $limit) {
-                $error_message = "超過 {$limit} 被中斷";
+                $error_message = "超過 {$limit} 秒被中斷";
                 break;
             }
         }
