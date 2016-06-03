@@ -13,7 +13,7 @@ if (!getenv('FILE_PATH')) {
     if (!file_exists(getenv('FILE_PATH'))) {
         mkdir(getenv('FILE_PATH'));
         foreach (glob(__DIR__ . "/template/*") as $f) {
-            copy($f, getenv('FILE_PATH'));
+            copy($f, getenv('FILE_PATH') .'/' . basename($f));
         }
     }
 }
