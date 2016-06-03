@@ -62,7 +62,10 @@ html {
                 <table class="table">
                     <thead>
                         <tr>
-                            <td>檔名</td>
+                            <td>
+                                檔名
+                                <a href="#" id="reload-file"><span class="glyphicon glyphicon-refresh" aria-hidden="true"></span></a>
+                            </td>
                             <td>大小</td>
                             <td>時間</td>
                             <td>動作</td>
@@ -202,6 +205,12 @@ $('#command-form').submit(function(e){
         $('#command-text').prop('disabled', true);
         check_session(ret.session_id, 0, 0);
     }, 'json');
+});
+
+$('#reload-file').click(function(e){
+    e.preventDefault();
+    var base_folder = $('#dir-location').data('dir');
+    chdir(base_folder);
 });
 
 $('#add-folder').submit(function(e){
