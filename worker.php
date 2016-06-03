@@ -1,8 +1,10 @@
 <?php
 
+include(__DIR__ . '/init.inc.php');
+
 while (true) {
     usleep(1000);
-    $pendings = glob(__DIR__ . "/sessions/*.pending");
+    $pendings = glob(getenv("SESSION_PATH") . '/*.pending');
     if (!$pendings) {
         continue;
     }
@@ -25,8 +27,8 @@ while (true) {
         error_log("Running {$session_id} $command...");
         $descriptorspec = array(
             0 => array("pipe", "r"),
-            1 => array("file", __DIR__ . '/sessions/' . $session_id . '.stdout', 'w'),
-            2 => array("file", __DIR__ . '/sessions/' . $session_id . '.stderr', 'w'),
+            1 => array("file", getenv('SESSION_PATH') . "/{$session_id}.stdout", 'w'),
+            2 => array("file", getenv('SESSION_PATH') . "/{$session_id}.stderr", 'w'),
         );
         $cwd = $base_folder;
         $env = array();
@@ -47,10 +49,10 @@ while (true) {
         }
         proc_close($proc);
         if ($error_message) {
-            file_put_contents(__DIR__ . '/sessions/' . $session_id . '.stderr', "\n" . $error_message, FILE_APPEND);
+            file_put_contents(getenv('SESSION_PATH') . "/{$session_id}.stderr", "\n" . $error_message, FILE_APPEND);
         }
 
-        touch(__DIR__ . '/sessions/' . $session_id . '.done');
+        touch(getenv('SESSION_PATH') . "/{$session_id}.done");
         error_log("Running {$session_id} $command done...");
         exit;
     }

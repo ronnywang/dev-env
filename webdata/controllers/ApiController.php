@@ -14,7 +14,7 @@ class ApiController extends Pix_Controller
     {
         $path = $_REQUEST['base'];
 
-        $file_base = realpath(__DIR__ . '/../../files/') . '/';
+        $file_base = realpath(getenv('FILE_PATH')) . '/';
         $path = realpath($file_base . $path);
         if (strpos($path, $file_base) !== 0) {
             return $this->error(sprintf("資料夾錯誤: %s", $_REQUEST['base']));
@@ -35,7 +35,7 @@ class ApiController extends Pix_Controller
             return $this->error("不能刪除根目錄");
         }
 
-        $file_base = realpath(__DIR__ . '/../../files/') . '/';
+        $file_base = realpath(getenv('FILE_PATH')) . '/';
         $path = realpath($file_base . $path);
         if (strpos($path, $file_base) !== 0) {
             return $this->error(sprintf("資料夾錯誤: %s", $_REQUEST['path']));
@@ -61,7 +61,7 @@ class ApiController extends Pix_Controller
     {
         $base_folder = $_REQUEST['base'];
 
-        $file_base = realpath(__DIR__ . '/../../files/') . '/';
+        $file_base = realpath(getenv('FILE_PATH')) . '/';
         $base_folder = realpath($file_base . $base_folder);
         if (strpos($base_folder, $file_base) !== 0) {
             return $this->error(sprintf("資料夾錯誤: %s", $_REQUEST['base']));
@@ -79,7 +79,7 @@ class ApiController extends Pix_Controller
     {
         $base_folder = $_REQUEST['base'];
 
-        $file_base = realpath(__DIR__ . '/../../files/') . '/';
+        $file_base = realpath(getenv('FILE_PATH')) . '/';
         $base_folder = realpath($file_base . $base_folder) . '/';
         if (strpos($base_folder, $file_base) !== 0) {
             return $this->error(sprintf("資料夾錯誤: %s", $_REQUEST['base']));
@@ -112,7 +112,7 @@ class ApiController extends Pix_Controller
         $base_folder = $_REQUEST['base'];
         $name = $_REQUEST['name'];
 
-        $file_base = realpath(__DIR__ . '/../../files/') . '/';
+        $file_base = realpath(getenv('FILE_PATH')) . '/';
         $base_folder = realpath($file_base . $base_folder) . '/';
         if (strpos($base_folder, $file_base) !== 0) {
             return $this->error(sprintf("資料夾錯誤: %s", $_REQUEST['base']));
@@ -145,15 +145,15 @@ class ApiController extends Pix_Controller
         $base_folder = $_REQUEST['base'];
         $command = $_REQUEST['command'];
 
-        $file_base = realpath(__DIR__ . '/../../files/') . '/';
+        $file_base = realpath(getenv('FILE_PATH')) . '/';
         $base_folder = realpath($file_base . $base_folder) . '/';
         if (strpos($base_folder, $file_base) !== 0 or !is_dir($base_folder)) {
             return $this->error(sprintf("資料夾錯誤: %s", $_REQUEST['base']));
         }
 
         $session_id = crc32(uniqid());
-        touch(__DIR__ . "/../../sessions/{$session_id}.stdout");
-        file_put_contents(__DIR__ . "/../../sessions/{$session_id}.pending", json_encode(array(
+        touch(getenv('SESSION_PATH') . "/{$session_id}.stdout");
+        file_put_contents(getenv('SESSION_PATH') . "/{$session_id}.pending", json_encode(array(
             'session_id' => $session_id,
             'command' => $command,
             'base_folder' => $base_folder,
@@ -167,7 +167,7 @@ class ApiController extends Pix_Controller
     public function getsessionAction()
     {
         $session_id = intval($_GET['session_id']);
-        $session_base = __DIR__ . '/../../sessions/';
+        $session_base = getenv('SESSION_PATH') . '/';
         $stdout_offset = intval($_GET['stdout_offset']);
         $stderr_offset = intval($_GET['stderr_offset']);
 
