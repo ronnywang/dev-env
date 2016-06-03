@@ -1,3 +1,6 @@
 [submodule "pixframework"]
 	path = pixframework
 	url = https://github.com/ronnywang/pixframework
+[submodule "codemirror"]
+	path = codemirror
+	url = https://github.com/codemirror/codemirror
