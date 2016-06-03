@@ -1,0 +1,14 @@
+{
+    "name": "ronnywang/dev-env",
+    "description": "Developement enviorment on web",
+    "require": {
+        "ext-pcntl": "^0.0.0"
+    },
+    "license": "BSD License",
+    "authors": [
+        {
+            "name": "Ronny Wang",
+            "email": "ronnywang@gmail.com"
+        }
+    ]
+}
