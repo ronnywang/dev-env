@@ -10,6 +10,42 @@ class ApiController extends Pix_Controller
         ));
     }
 
+    public function getfileAction()
+    {
+        $base_folder = $_REQUEST['base'];
+
+        $file_base = realpath(__DIR__ . '/../../files/') . '/';
+        $base_folder = realpath($file_base . $base_folder);
+        if (strpos($base_folder, $file_base) !== 0) {
+            return $this->error(sprintf("資料夾錯誤: %s", $_REQUEST['base']));
+        }
+        if (!file_exists($base_folder) or !is_file($base_folder)) {
+            return $this->error(sprintf("找不到資料夾或不是檔案: %s", $_REQUEST['base']));
+        }
+        return $this->json(array(
+            'error' => false,
+            'body' => file_get_contents($base_folder),
+        ));
+    }
+
+    public function savefileAction()
+    {
+        $base_folder = $_REQUEST['base'];
+
+        $file_base = realpath(__DIR__ . '/../../files/') . '/';
+        $base_folder = realpath($file_base . $base_folder);
+        if (strpos($base_folder, $file_base) !== 0) {
+            return $this->error(sprintf("資料夾錯誤: %s", $_REQUEST['base']));
+        }
+        if (!file_exists($base_folder) or !is_file($base_folder)) {
+            return $this->error(sprintf("找不到資料夾或不是檔案: %s", $_REQUEST['base']));
+        }
+        file_put_contents($base_folder, $_REQUEST['body']);
+        return $this->json(array(
+            'error' => false,
+        ));
+    }
+
     public function listfileAction()
     {
         $base_folder = $_REQUEST['base'];
