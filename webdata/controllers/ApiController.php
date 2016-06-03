@@ -10,6 +10,24 @@ class ApiController extends Pix_Controller
         ));
     }
 
+    public function getfileAction()
+    {
+        $path = $_REQUEST['base'];
+
+        $file_base = realpath(__DIR__ . '/../../files/') . '/';
+        $path = realpath($file_base . $path);
+        if (strpos($path, $file_base) !== 0) {
+            return $this->error(sprintf("資料夾錯誤: %s", $_REQUEST['base']));
+        }
+        if (!file_exists($path) and !is_file($path)) {
+            return $this->error(sprintf("找不到檔案或者不是檔案:  %s", $_REQUEST['base']));
+        }
+
+        return $this->json(array(
+            'error' => false,
+            'body' => file_get_contents($path),
+        ));
+    }
     public function deletefileAction()
     {
         $path = $_REQUEST['path'];
