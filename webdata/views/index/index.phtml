@@ -138,7 +138,18 @@ var reload_files = function(){
             tr_dom.append($('<td></td>').append(a_dom));
             tr_dom.append($('<td></td>').append(ret.files[i].size));
             tr_dom.append($('<td></td>').append(ret.files[i].mtime));
-            tr_dom.append($('<td></td>').append(''));
+            var td_dom = $('<td></td>');
+            a_dom = $('<a></a>').attr('href', '#').addClass('delete-file').data('path', ret.files[i].path);
+            a_dom.append('<span class="glyphicon glyphicon-remove" aria-hidden="true"></span> ');
+            td_dom.append(a_dom);
+            a_dom = $('<a></a>').attr('href', '#').addClass('view-file').data('path', ret.files[i].path);
+            a_dom.append('<span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span> ');
+            td_dom.append(a_dom);
+            a_dom = $('<a></a>').attr('href', '#').addClass('download-file').data('path', ret.files[i].path);
+            a_dom.append('<span class="glyphicon glyphicon-download" aria-hidden="true"></span> ');
+            td_dom.append(a_dom);
+
+            tr_dom.append(td_dom);
             $('#file-list').append(tr_dom);
         }
     }, 'json');
@@ -151,6 +162,21 @@ $('#file-area').on('click', '.dir-link', function(e){
 $('#file-area').on('click', '.file-link', function(e){
     e.preventDefault();
     openfile($(this).data('path'));
+});
+$('#file-area').on('click', '.delete-file', function(e){
+    e.preventDefault();
+    var path = $(this).data('path');
+    if (!confirm("您確定要刪除 " + path + "?")) {
+        return;
+    }
+    $.post('/api/deletefile?path=' + encodeURIComponent(path), '', function(ret){
+        if (ret.error) {
+            alert(ret.message);
+            return;
+        }
+        var base_folder = $('#dir-location').data('dir');
+        chdir(base_folder);
+    }, 'json');
 });
 
 $('#save-file-button').click(function(e){

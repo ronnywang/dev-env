@@ -10,21 +10,32 @@ class ApiController extends Pix_Controller
         ));
     }
 
-    public function getfileAction()
+    public function deletefileAction()
     {
-        $base_folder = $_REQUEST['base'];
+        $path = $_REQUEST['path'];
+        if (trim($path, '/') == '') {
+            return $this->error("不能刪除根目錄");
+        }
 
         $file_base = realpath(__DIR__ . '/../../files/') . '/';
-        $base_folder = realpath($file_base . $base_folder);
-        if (strpos($base_folder, $file_base) !== 0) {
-            return $this->error(sprintf("資料夾錯誤: %s", $_REQUEST['base']));
+        $path = realpath($file_base . $path);
+        if (strpos($path, $file_base) !== 0) {
+            return $this->error(sprintf("資料夾錯誤: %s", $_REQUEST['path']));
         }
-        if (!file_exists($base_folder) or !is_file($base_folder)) {
-            return $this->error(sprintf("找不到資料夾或不是檔案: %s", $_REQUEST['base']));
+        if (!file_exists($path)) {
+            return $this->error(sprintf("找不到 %s", $_REQUEST['path']));
         }
+        if (is_file($path)) {
+            unlink($path);
+        } else { 
+            if (glob($path . '/*')) {
+                return $this->error(sprintf("無法刪除裡面還有檔案的資料夾"));
+            }
+            rmdir($path);
+        }
+
         return $this->json(array(
             'error' => false,
-            'body' => file_get_contents($base_folder),
         ));
     }
 
