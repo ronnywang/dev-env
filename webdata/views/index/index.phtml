@@ -150,12 +150,14 @@ var reload_files = function(){
             a_dom = $('<a></a>').attr('href', '#').addClass('delete-file').data('path', ret.files[i].path);
             a_dom.append('<span class="glyphicon glyphicon-remove" aria-hidden="true"></span> ');
             td_dom.append(a_dom);
-            a_dom = $('<a></a>').attr('href', '#').addClass('view-file').data('path', ret.files[i].path);
-            a_dom.append('<span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span> ');
-            td_dom.append(a_dom);
-            a_dom = $('<a></a>').attr('href', '#').addClass('download-file').data('path', ret.files[i].path);
-            a_dom.append('<span class="glyphicon glyphicon-download" aria-hidden="true"></span> ');
-            td_dom.append(a_dom);
+            if (ret.files[i].type == 'file') {
+                a_dom = $('<a></a>').attr('href', '#').addClass('view-file').data('path', ret.files[i].path);
+                a_dom.append('<span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span> ');
+                td_dom.append(a_dom);
+                a_dom = $('<a></a>').attr('href', '#').addClass('download-file').data('path', ret.files[i].path);
+                a_dom.append('<span class="glyphicon glyphicon-download" aria-hidden="true"></span> ');
+                td_dom.append(a_dom);
+            }
 
             tr_dom.append(td_dom);
             $('#file-list').append(tr_dom);
@@ -171,6 +173,17 @@ $('#file-area').on('click', '.file-link', function(e){
     e.preventDefault();
     openfile($(this).data('path'));
 });
+$('#file-area').on('click', '.download-file', function(e){
+    e.preventDefault();
+    var path = $(this).data('path');
+    document.location = '/api/getfile?base=' + encodeURIComponent(path) + '&type=download';
+});
+$('#file-area').on('click', '.view-file', function(e){
+    e.preventDefault();
+    var path = $(this).data('path');
+    window.open('/api/getfile?base=' + encodeURIComponent(path) + '&type=view', '_blank');
+});
+
 $('#file-area').on('click', '.delete-file', function(e){
     e.preventDefault();
     var path = $(this).data('path');

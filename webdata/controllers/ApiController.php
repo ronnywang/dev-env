@@ -19,15 +19,26 @@ class ApiController extends Pix_Controller
         if (strpos($path, $file_base) !== 0) {
             return $this->error(sprintf("資料夾錯誤: %s", $_REQUEST['base']));
         }
-        if (!file_exists($path) and !is_file($path)) {
+        if (!file_exists($path) or !is_file($path)) {
             return $this->error(sprintf("找不到檔案或者不是檔案:  %s", $_REQUEST['base']));
         }
 
-        return $this->json(array(
-            'error' => false,
-            'body' => file_get_contents($path),
-        ));
+        if ($_GET['type'] == 'download') {
+            header(sprintf('Content-Disposition: attachment; filename="%s"', urlencode(basename($path))));
+            readline($path);
+            return $this->noview();
+        } elseif ($_GET['type'] == 'view') {
+            header("Content-Type: text/plain");
+            readfile($path);
+            return $this->noview();
+        } else {
+            return $this->json(array(
+                'error' => false,
+                'body' => file_get_contents($path),
+            ));
+        }
     }
+
     public function deletefileAction()
     {
         $path = $_REQUEST['path'];
