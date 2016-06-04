@@ -19,9 +19,9 @@
 
 Heroku 安裝方式
 ===============
-* 裝好 [https://toolbelt.heroku.com/](Heroku Toolbelt)
+* 裝好 [Heroku Toolbelt](https://toolbelt.heroku.com/)
 * 建立新的 Heroku App
-* git remote add heroku https://git.heroku.com/APP\_NAME.git
+* git remote add heroku https://git.heroku.com/APP_NAME.git
 * heroku buildpacks:set heroku/php
 * heroku buildpacks:add --index 2 heroku/python
 * heroku buildpacks:add --index 3 heroku/nodejs
