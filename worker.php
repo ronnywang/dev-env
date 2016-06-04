@@ -50,6 +50,7 @@ while (true) {
             }
             if (microtime(true) - $start > $limit) {
                 $error_message = "超過 {$limit} 秒被中斷";
+                proc_terminate($proc);
                 break;
             }
         }
