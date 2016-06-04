@@ -38,7 +38,7 @@ while (true) {
             2 => array("file", getenv('SESSION_PATH') . "/{$session_id}.stderr", 'w'),
         );
         $cwd = $base_folder;
-        $proc = proc_open($command, $descriptorspec, $pipes, $cwd);
+        $proc = proc_open('exec ' . $command, $descriptorspec, $pipes, $cwd);
         $start = microtime(true);
         $limit = intval(getenv('TIME_LIMIT')) ?: 300;
         $error_message = null;
