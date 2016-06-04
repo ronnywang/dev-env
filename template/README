@@ -1,10 +1,16 @@
-這是一個可以在 web 上練習寫 PHP 的環境
+這是一個可以在 web 上練習寫各種程式語言的環境
+(只要安裝的地方有支援都行)
 您可以在右下角檔案區自由新增檔案
 在左邊編輯區修改內容並儲存
 以及在右邊的結果區，可以下指令執行
 
-在剛跑起來的初始環境中，會有兩個檔案 README 和 hello.php
-您可以試試看在指令區輸入 php hello.php
-就可以執行這個 PHP 囉
+在剛跑起來的初始環境中，會有 README 和各種語言的 hello world
+您可以試試看在指令區輸入以下指令
+php hello.php
+python hello.py
+ruby hello.rb
+node hello.js
+
+就可以執行這些語言囉
 
 關於本程式原始碼放在 https://github.com/ronnywang/dev-env
