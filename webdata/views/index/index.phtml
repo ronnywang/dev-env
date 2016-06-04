@@ -283,13 +283,23 @@ require([
         lineNumbers: true,
         mode: "php"
 });
+
+var last_change = 0;
 codemirror.on('change', function(e){
+    last_change = (new Date).getTime();
+});
+
+setInterval(function(){
+    if (!last_change) {
+        return;
+    }
+    last_change = 0;
     if ($('#code').val() != codemirror.getValue()) {
         $('#save-file-button').show();
     } else {
         $('#save-file-button').hide();
     }
-});
+}, 1000);
 if (document.location.hash) {
     var hash = document.location.hash.split('#')[1];
     openfile(hash.split(';')[0]);
