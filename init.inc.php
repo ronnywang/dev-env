@@ -17,6 +17,9 @@ if (!getenv('FILE_PATH')) {
         }
     }
 }
+if (!getenv('TIME_LIMIT')) {
+    putenv('TIME_LIMIT=300');
+}
 include(__DIR__ . '/pixframework/Pix/Loader.php');
 set_include_path(__DIR__ . '/pixframework/');
 Pix_Loader::registerAutoLoad();

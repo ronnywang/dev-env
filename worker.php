@@ -40,7 +40,7 @@ while (true) {
         $cwd = $base_folder;
         $proc = proc_open($command, $descriptorspec, $pipes, $cwd);
         $start = microtime(true);
-        $limit = 300;
+        $limit = intval(getenv('TIME_LIMIT')) ?: 300;
         $error_message = null;
         while (true) {
             usleep(1000);
