@@ -247,9 +247,9 @@ var check_session = function(session_id, stdout_offset, stderr_offset){
 $('#command-form').submit(function(e){
     e.preventDefault();
     var base_folder = $('#dir-location').data('dir');
+    $('#command-form').prop('disabled', true);
+    $('#command-text').prop('disabled', true);
     $.post('/api/runcommand?base=' + encodeURIComponent(base_folder) + '&command=' + encodeURIComponent($('#command-text').val()), '', function(ret){
-        $('#command-form').prop('disabled', true);
-        $('#command-text').prop('disabled', true);
         check_session(ret.session_id, 0, 0);
     }, 'json');
 });
