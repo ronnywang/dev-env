@@ -282,32 +282,33 @@ require([
     codemirror = CodeMirror.fromTextArea(document.getElementById("code"), {
         lineNumbers: true,
         mode: "php"
-});
+    });
+    codemirror.setSize('100%', '100%');
 
-var last_change = 0;
-codemirror.on('change', function(e){
-    last_change = (new Date).getTime();
-});
+    var last_change = 0;
+    codemirror.on('change', function(e){
+        last_change = (new Date).getTime();
+    });
 
-setInterval(function(){
-    if (!last_change) {
-        return;
-    }
-    last_change = 0;
-    if ($('#code').val() != codemirror.getValue()) {
-        $('#save-file-button').show();
+    setInterval(function(){
+        if (!last_change) {
+            return;
+        }
+        last_change = 0;
+        if ($('#code').val() != codemirror.getValue()) {
+            $('#save-file-button').show();
+        } else {
+            $('#save-file-button').hide();
+        }
+    }, 1000);
+    if (document.location.hash) {
+        var hash = document.location.hash.split('#')[1];
+        openfile(hash.split(';')[0]);
+        chdir(hash.split(';')[1]);
     } else {
-        $('#save-file-button').hide();
+        openfile('/README');
+        chdir('/');
     }
-}, 1000);
-if (document.location.hash) {
-    var hash = document.location.hash.split('#')[1];
-    openfile(hash.split(';')[0]);
-    chdir(hash.split(';')[1]);
-} else {
-    openfile('/README');
-    chdir('/');
-}
 });
 
 </script>
