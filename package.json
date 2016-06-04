@@ -1,0 +1,19 @@
+{
+  "name": "dev-env",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ronnywang/dev-env.git"
+  },
+  "author": "",
+  "license": "BSD-3-Clause",
+  "bugs": {
+    "url": "https://github.com/ronnywang/dev-env/issues"
+  },
+  "homepage": "https://github.com/ronnywang/dev-env#readme"
+}
