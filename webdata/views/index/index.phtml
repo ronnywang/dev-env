@@ -7,6 +7,7 @@
 <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.6/css/bootstrap.css">
 <script src="//cdnjs.cloudflare.com/ajax/libs/require.js/2.1.14/require.min.js"></script>
 <link rel="stylesheet" href="/static/codemirror/lib/codemirror.css">
+<link rel="stylesheet" href="/static/codemirror/theme/colorforth.css">
 <style>
 html {
     height: 100%;
@@ -104,6 +105,15 @@ var openfile = function(path){
         if (ret.error) {
             alert(ret.message);
             return;
+        }
+        if (path.match('.php$')) {
+            codemirror.setOption('mode', 'php');
+        } else if (path.match('.js$')) {
+            codemirror.setOption('mode', 'javascript');
+        } else if (path.match('.py$')) {
+            codemirror.setOption('mode', 'python');
+        } else if (path.match('.rb$')) {
+            codemirror.setOption('mode', 'ruby');
         }
         codemirror.setValue(ret.body);
         $('#code').val(ret.body);
@@ -279,13 +289,18 @@ $('#add-folder').submit(function(e){
 
 var codemirror;
 require([
-    "codemirror", "codemirror/mode/htmlmixed/htmlmixed", "codemirror/mode/php/php"
+    "codemirror",
+    "codemirror/mode/htmlmixed/htmlmixed",
+    "codemirror/mode/php/php",
+    "codemirror/mode/javascript/javascript",
+    "codemirror/mode/python/python",
+    "codemirror/mode/ruby/ruby",
 ], function(CodeMirror) {
     codemirror = CodeMirror.fromTextArea(document.getElementById("code"), {
         lineNumbers: true,
-        mode: "php"
     });
     codemirror.setSize('100%', '100%');
+    codemirror.setOption('theme', 'colorforth');
 
     if (document.location.hash) {
         var hash = document.location.hash.split('#')[1];
