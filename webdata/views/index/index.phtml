@@ -112,8 +112,10 @@ var openfile = function(path){
             codemirror.setOption('mode', 'javascript');
         } else if (path.match('.py$')) {
             codemirror.setOption('mode', 'python');
-        } else if (path.match('.rb$')) {
+        } else if (path.match('.rb$') || path.match('.json$')) {
             codemirror.setOption('mode', 'ruby');
+        } else {
+            codemirror.setOption('mode', 'htmlmixed');
         }
         codemirror.setValue(ret.body);
         $('#code').val(ret.body);
@@ -298,6 +300,7 @@ require([
 ], function(CodeMirror) {
     codemirror = CodeMirror.fromTextArea(document.getElementById("code"), {
         lineNumbers: true,
+        mode: 'htmlmixed',
     });
     codemirror.setSize('100%', '100%');
     codemirror.setOption('theme', 'colorforth');
