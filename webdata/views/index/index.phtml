@@ -48,7 +48,7 @@ body {
                         </a>
                         </li>
                     </ul>
-                    <input type="text" id="command-text"><button type="submit">RUN</button>
+                    <input type="text" id="command-text"><button type="submit" id="command-button">RUN</button>
                 </form>
             </div>
         </div>
@@ -237,6 +237,8 @@ $('.result-switch').click(function(e){
 
 });
 
+var current_session_id = null;
+
 var check_session = function(session_id, stdout_offset, stderr_offset){
     $.get('/api/getsession?session_id=' + encodeURIComponent(session_id) + '&stdout_offset=' + parseInt(stdout_offset) + '&stderr_offset=' + parseInt(stderr_offset), function(ret){
         ['stdout', 'stderr'].map(function(type){
@@ -251,7 +253,8 @@ var check_session = function(session_id, stdout_offset, stderr_offset){
 
         if (ret.done) {
             $('#command-text').prop('disabled', false);
-            $('#command-form').prop('disabled', false);
+            $('#command-button').text('RUN');
+            current_session_id = null;
         } else {
             setTimeout(function(){ check_session(session_id, ret.stdout_offset, ret.stderr_offset); }, 500);
         }
@@ -261,11 +264,18 @@ var check_session = function(session_id, stdout_offset, stderr_offset){
 $('#command-form').submit(function(e){
     e.preventDefault();
     var base_folder = $('#dir-location').data('dir');
-    $('#command-form').prop('disabled', true);
     $('#command-text').prop('disabled', true);
-    $.post('/api/runcommand?base=' + encodeURIComponent(base_folder) + '&command=' + encodeURIComponent($('#command-text').val()), '', function(ret){
-        check_session(ret.session_id, 0, 0);
-    }, 'json');
+    if (current_session_id) {
+        $.post('/api/killsession?session_id=' + encodeURIComponent(current_session_id), '', function(ret){
+            // do nothing
+        }, 'json');
+    } else {
+        $('#command-button').text('STOP');
+        $.post('/api/runcommand?base=' + encodeURIComponent(base_folder) + '&command=' + encodeURIComponent($('#command-text').val()), '', function(ret){
+            current_session_id = ret.session_id;
+            check_session(ret.session_id, 0, 0);
+        }, 'json');
+    }
 });
 
 $('#reload-file').click(function(e){

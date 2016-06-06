@@ -48,6 +48,13 @@ while (true) {
             if (!$status['running']) {
                 break;
             }
+            if (file_exists(getenv('SESSION_PATH') . "/{$session_id}.kill")) {
+                unlink(getenv('SESSION_PATH') . "/{$session_id}.kill");
+                $error_message = "被中斷";
+                proc_terminate($proc);
+                break;
+
+            }
             if (microtime(true) - $start > $limit) {
                 $error_message = "超過 {$limit} 秒被中斷";
                 proc_terminate($proc);

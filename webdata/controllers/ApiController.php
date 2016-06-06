@@ -175,6 +175,20 @@ class ApiController extends Pix_Controller
         ));
     }
 
+    public function killsessionAction()
+    {
+        $session_id = intval($_GET['session_id']);
+        $session_base = getenv('SESSION_PATH') . '/';
+
+        if (!file_exists("{$session_base}{$session_id}.stdout")) {
+            return $this->error(sprintf("找不到 session : %s", $session_id));
+        }
+        touch("{$session_base}{$session_id}.kill");
+        return $this->json(array(
+            'error' => false,
+        ));
+    }
+
     public function getsessionAction()
     {
         $session_id = intval($_GET['session_id']);
