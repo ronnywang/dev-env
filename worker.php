@@ -34,8 +34,8 @@ while (true) {
         error_log("Running {$session_id} $command...");
         $descriptorspec = array(
             0 => array("pipe", "r"),
-            1 => array("file", getenv('SESSION_PATH') . "/{$session_id}.stdout", 'w'),
-            2 => array("file", getenv('SESSION_PATH') . "/{$session_id}.stderr", 'w'),
+            1 => array("file", getenv('SESSION_PATH') . "/{$session_id}.stdout", 'a'),
+            2 => array("file", getenv('SESSION_PATH') . "/{$session_id}.stderr", 'a'),
         );
         $cwd = $base_folder;
         $proc = proc_open('exec ' . $command, $descriptorspec, $pipes, $cwd);
@@ -48,12 +48,18 @@ while (true) {
             if (!$status['running']) {
                 break;
             }
+            if (file_exists(getenv('SESSION_PATH') . "/{$session_id}.stdin")) {
+                $stdin = file_get_contents(getenv('SESSION_PATH') . "/{$session_id}.stdin");
+                unlink(getenv('SESSION_PATH') . "/{$session_id}.stdin");
+                file_put_contents(getenv('SESSION_PATH') . "/{$session_id}.stdout", $stdin, FILE_APPEND | LOCK_EX);
+                fputs($pipes[0], $stdin);
+            }
+
             if (file_exists(getenv('SESSION_PATH') . "/{$session_id}.kill")) {
                 unlink(getenv('SESSION_PATH') . "/{$session_id}.kill");
                 $error_message = "被中斷";
                 proc_terminate($proc);
                 break;
-
             }
             if (microtime(true) - $start > $limit) {
                 $error_message = "超過 {$limit} 秒被中斷";

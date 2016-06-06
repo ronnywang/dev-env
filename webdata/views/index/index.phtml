@@ -48,7 +48,9 @@ body {
                         </a>
                         </li>
                     </ul>
-                    <input type="text" id="command-text"><button type="submit" id="command-button">RUN</button>
+                    <input type="text" id="command-text">
+                    <button type="submit" id="command-button">RUN</button>
+                    <button type="button" id="command-stop" style="display: none">STOP</button>
                 </form>
             </div>
         </div>
@@ -252,7 +254,7 @@ var check_session = function(session_id, stdout_offset, stderr_offset){
         });
 
         if (ret.done) {
-            $('#command-text').prop('disabled', false);
+            $('#command-stop').hide();
             $('#command-button').text('RUN');
             current_session_id = null;
         } else {
@@ -261,17 +263,28 @@ var check_session = function(session_id, stdout_offset, stderr_offset){
     }, 'json');
 };
 
+$('#command-stop').click(function(e){
+    e.preventDefault();
+    $.post('/api/killsession?session_id=' + encodeURIComponent(current_session_id), '', function(ret){
+        // do nothing
+    }, 'json');
+});
+
 $('#command-form').submit(function(e){
     e.preventDefault();
     var base_folder = $('#dir-location').data('dir');
-    $('#command-text').prop('disabled', true);
+    $('#command-form').prop('disabled', true);
     if (current_session_id) {
-        $.post('/api/killsession?session_id=' + encodeURIComponent(current_session_id), '', function(ret){
-            // do nothing
-        }, 'json');
+        $.post('/api/senddata?session_id=' + current_session_id, 'data=' + encodeURIComponent($('#command-text').val() + "\n"), function(ret){
+            $('#command-form').prop('disabled', false);
+            $('#command-text').val('').focus();
+        });
     } else {
-        $('#command-button').text('STOP');
         $.post('/api/runcommand?base=' + encodeURIComponent(base_folder) + '&command=' + encodeURIComponent($('#command-text').val()), '', function(ret){
+            $('#command-form').prop('disabled', false);
+            $('#command-button').text('SEND');
+            $('#command-text').val('').focus();
+            $('#command-stop').show();
             current_session_id = ret.session_id;
             check_session(ret.session_id, 0, 0);
         }, 'json');
