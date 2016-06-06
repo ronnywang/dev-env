@@ -25,7 +25,7 @@ class ApiController extends Pix_Controller
 
         if ($_GET['type'] == 'download') {
             header(sprintf('Content-Disposition: attachment; filename="%s"', urlencode(basename($path))));
-            readline($path);
+            readfile($path);
             return $this->noview();
         } elseif ($_GET['type'] == 'view') {
             header("Content-Type: text/plain");
