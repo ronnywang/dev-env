@@ -277,6 +277,40 @@ $('#command-stop').click(function(e){
     }, 'json');
 });
 
+var command_history = [];
+var command_position = -1;
+
+$('#command-text').keydown(function(e){
+    var code = (e.keyCode ? e.keyCode : e.which);
+    if (command_history.length == 0) {
+        return;
+    }
+
+    if (code == 40) { // down
+        if (command_position == -1) {
+            return;
+        } else if (command_position == command_history.length - 1) {
+            command_position = -1;
+            $('#command-text').val('');
+            return;
+        } else {
+            command_position ++;
+        }
+    } else if (code == 38) { // up
+        if (command_position == -1) {
+            command_position = command_history.length - 1;
+        } else if (command_position == 0) {
+            return;
+        } else {
+            command_position --;
+        }
+    } else {
+        return;
+    }
+    $('#command-text').val(command_history[command_position]);
+
+});
+
 $('#command-form').submit(function(e){
     e.preventDefault();
     var base_folder = $('#dir-location').data('dir');
@@ -287,10 +321,19 @@ $('#command-form').submit(function(e){
             $('#command-text').val('').focus();
         });
     } else {
+        if ($('#command-text').val() == '') {
+            return;
+        }
+
         if ($('#file-is-changed').is(':visible')) {
             if (!confirm("編輯區檔案尚未儲存，現在執行可能是舊資料，您確定要執行指令嗎?")) {
                 return;
             }
+        }
+
+        if (command_history[command_history.length - 1] != $('#command-text').val()) {
+            command_history.push($('#command-text').val());
+            command_position = -1;
         }
 
         if ('clear' == $('#command-text').val()) {
