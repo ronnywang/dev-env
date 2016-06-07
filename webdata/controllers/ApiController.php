@@ -35,6 +35,7 @@ class ApiController extends Pix_Controller
             return $this->json(array(
                 'error' => false,
                 'body' => file_get_contents($path),
+                'path' => substr($path, strlen($file_base) - 1),
             ));
         }
     }
