@@ -23,7 +23,7 @@ body {
         <div class="panel-heading">編輯區</div>
         <div class="panel-body" style="height: 100%">
             <h3 id="filename"></h3>
-            <a href="#" id="save-file-button"><span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span></a>
+            <a href="#" id="save-file-button"><span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span></a><span id="file-is-changed" style="display:none">(*)</span>
             <textarea id="code" style="width: 100%; height: 100%"></textarea>
         </div>
     </div>
@@ -120,6 +120,7 @@ var openfile = function(path){
             codemirror.setOption('mode', 'htmlmixed');
         }
         codemirror.setValue(ret.body);
+        $('#file-is-changed').hide();
         $('#code').val(ret.body);
     });
 };
@@ -327,6 +328,12 @@ require([
     });
     codemirror.setSize('100%', '100%');
     codemirror.setOption('theme', 'colorforth');
+    codemirror.on('change', function(){
+        if (!$('#file-is-changed').is(':hidden')) {
+            return;
+        }
+        $('#file-is-changed').show();
+    });
 
     if (document.location.hash) {
         var hash = document.location.hash.split('#')[1];
