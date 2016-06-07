@@ -264,6 +264,7 @@ var check_session = function(session_id, stdout_offset, stderr_offset){
             $('#command-stop').hide();
             $('#command-button').text('RUN');
             current_session_id = null;
+            reload_files();
         } else {
             setTimeout(function(){ check_session(session_id, ret.stdout_offset, ret.stderr_offset); }, 500);
         }
