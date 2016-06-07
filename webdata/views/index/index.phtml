@@ -156,7 +156,8 @@ var reload_files = function(){
     var base_folder = $('#dir-location').data('dir');
     $.get('/api/listfile?base=' + encodeURIComponent(base_folder), function(ret){
         $('#file-list').html('');
-        for (var i = 0; i < ret.files.length; i ++) {
+        var files = ret.files.sort(function(a, b){ return (new Date(b.mtime)) - (new Date(a.mtime)); });
+        for (var i = 0; i < files.length; i ++) {
             var tr_dom = $('<tr></tr>');
             var a_dom = $('<a></a>').attr('href', '#').addClass(ret.files[i].type + '-link').data('path', ret.files[i].path);
             if (ret.files[i].type == 'dir') {
