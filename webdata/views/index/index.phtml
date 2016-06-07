@@ -125,6 +125,7 @@ var openfile = function(path){
         }
         codemirror.setValue(ret.body);
         $('#file-is-changed').hide();
+        codemirror.focus();
         $('#code').val(ret.body);
     });
 };
@@ -230,6 +231,7 @@ $('#save-file-button').click(function(e){
             alert(ret.message);
             return;
         }
+        $('#file-is-changed').hide();
         openfile(file_path);
     }, 'json');
 });
