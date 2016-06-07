@@ -101,6 +101,11 @@ var update_location_hash = function(){
 };
 
 var openfile = function(path){
+    if ($('#file-is-changed').is(':visible')) {
+        if (!confirm("編輯區檔案尚未儲存，讀取檔案可能會失去變更，您確定要讀取檔案嗎?")) {
+            return;
+        }
+    }
     $('#filename').text(path).data('path', path);
     update_location_hash();
     $.get('/api/getfile?base=' + encodeURIComponent(path), function(ret){
@@ -281,6 +286,11 @@ $('#command-form').submit(function(e){
             $('#command-text').val('').focus();
         });
     } else {
+        if ($('#file-is-changed').is(':visible')) {
+            if (!confirm("編輯區檔案尚未儲存，現在執行可能是舊資料，您確定要執行指令嗎?")) {
+                return;
+            }
+        }
         $.post('/api/runcommand?base=' + encodeURIComponent(base_folder) + '&command=' + encodeURIComponent($('#command-text').val()), '', function(ret){
             $('#command-form').prop('disabled', false);
             $('#command-button').text('SEND');
