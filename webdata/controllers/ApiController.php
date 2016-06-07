@@ -114,6 +114,7 @@ class ApiController extends Pix_Controller
         }
         return $this->json(array(
             'error' => false,
+            'path' => substr($base_folder, strlen($file_base) - 1),
             'files' => $ret,
         ));
     }
