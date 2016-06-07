@@ -292,6 +292,40 @@ $('#command-form').submit(function(e){
                 return;
             }
         }
+
+        if ('clear' == $('#command-text').val()) {
+            $('#command-form').prop('disabled', false);
+            $('#command-text').val('').focus();
+            $('#result-stderr-isnew').hide();
+            $('#result-stdout-isnew').hide();
+            $('#result-stderr').val('');
+            $('#result-stdout').val('');
+            return;
+        }
+
+        if ($('#command-text').val().split(' ')[0] == 'cd') {
+            $('#command-form').prop('disabled', false);
+
+            var input = $('#command-text').val();
+            $('#command-text').val('').focus();
+            if (input == 'cd') {
+                chdir('/');
+                return;
+            }
+            path = input.split(' ')[1];
+            if (!path.match('^/')) {
+                path = base_folder + path;
+            }
+            $.get('/api/listfile?base=' + encodeURIComponent(path), function(ret){
+                if (ret.error) {
+                    alert(ret.message);
+                    return;
+                }
+                chdir(ret.path);
+            }, 'json');
+            return;
+        }
+
         $.post('/api/runcommand?base=' + encodeURIComponent(base_folder) + '&command=' + encodeURIComponent($('#command-text').val()), '', function(ret){
             $('#command-form').prop('disabled', false);
             $('#command-button').text('SEND');
