@@ -444,6 +444,15 @@ require([
         $('#file-is-changed').show();
     });
 
+    $(document).bind('keydown', function(e) {
+        if(e.ctrlKey && (e.which == 83)) {
+            e.preventDefault();
+            $('#save-file-button').click();
+            return false;
+        }
+    });
+
+
     if (document.location.hash) {
         var hash = document.location.hash.split('#')[1];
         openfile(hash.split(';')[0]);
